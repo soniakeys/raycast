@@ -21,6 +21,10 @@ type XY struct {
 type Poly []XY
 
 // In returns true if pt is inside pg.
+//
+// The result is accurate until pt is within about 2 units of least precision
+// (ULP) of pg.  If pt is within 2 ULP of pg, the method may return true or
+// false.
 func (pt XY) In(pg Poly) bool {
 	if len(pg) < 3 {
 		return false
@@ -40,6 +44,7 @@ func rayIntersectsSegment(p, a, b XY) bool {
 	if a.Y > b.Y {
 		a, b = b, a
 	}
+	// up to 2 ULP bump here.
 	for p.Y == a.Y || p.Y == b.Y {
 		p.Y = math.Nextafter(p.Y, math.Inf(1))
 	}
