@@ -7,6 +7,9 @@ import (
 	"testing"
 )
 
+// easy_test.go contains some test cases from other pnp implementations
+// found on the internet.  The cases selected here are "easy" in that none
+// fall exactly on segments or vertices.  All are clearly in or out.
 type pgCase struct {
 	name string
 	pg   raycast.Poly
@@ -36,10 +39,7 @@ var easy = []pgCase{
 			{raycast.XY{5, 5}, true},
 			{raycast.XY{5, 8}, true},
 			{raycast.XY{-10, 5}, false},
-			{raycast.XY{0, 5}, false},
-			{raycast.XY{10, 5}, true},
 			{raycast.XY{8, 5}, true},
-			{raycast.XY{10, 10}, false},
 			{raycast.XY{1, 2}, true},
 			{raycast.XY{2, 1}, true},
 		}},
@@ -50,10 +50,7 @@ var easy = []pgCase{
 			{raycast.XY{5, 5}, false},
 			{raycast.XY{5, 8}, true},
 			{raycast.XY{-10, 5}, false},
-			{raycast.XY{0, 5}, false},
-			{raycast.XY{10, 5}, true},
 			{raycast.XY{8, 5}, true},
-			{raycast.XY{10, 10}, false},
 			{raycast.XY{1, 2}, true},
 			{raycast.XY{2, 1}, true},
 		}},
@@ -64,10 +61,7 @@ var easy = []pgCase{
 			{raycast.XY{5, 5}, true},
 			{raycast.XY{5, 8}, false},
 			{raycast.XY{-10, 5}, false},
-			{raycast.XY{0, 5}, false},
-			{raycast.XY{10, 5}, true},
 			{raycast.XY{8, 5}, true},
-			{raycast.XY{10, 10}, false},
 			{raycast.XY{1, 2}, false},
 			{raycast.XY{2, 1}, false},
 		}},
@@ -77,8 +71,6 @@ var easy = []pgCase{
 			{raycast.XY{5, 5}, true},
 			{raycast.XY{5, 8}, true},
 			{raycast.XY{-10, 5}, false},
-			{raycast.XY{0, 5}, false},
-			{raycast.XY{10, 5}, true},
 			{raycast.XY{8, 5}, true},
 			{raycast.XY{10, 10}, false},
 			{raycast.XY{1, 2}, false},

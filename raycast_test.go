@@ -4,7 +4,6 @@ package raycast_test
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
 	"testing"
 
@@ -18,6 +17,8 @@ func ExamplePoly() {
 }
 
 // WP notes a ray passing through a "side" vertex is an interesting test case.
+// The test case selected for ExampleXY shows the function working properly
+// in this case.
 
 func ExampleXY_In() {
 	triangle := raycast.Poly{{0, 0}, {0, 2}, {2, 1}}
@@ -27,8 +28,37 @@ func ExampleXY_In() {
 	// true
 }
 
-// tests added for coverage
+func ExampleXY_In_hourglass() {
+	// hg is an hourglass-shape, constructed with crossing segments.
+	// Both regions are on the perimiter so In returns true for points
+	// in both regions.
+	hg := raycast.Poly{{0, 0}, {2, 4}, {0, 4}, {2, 0}}
+	top := raycast.XY{1, 3}
+	bottom := raycast.XY{1, 1}
+	fmt.Println(top.In(hg))
+	fmt.Println(bottom.In(hg))
+	// Output:
+	// true
+	// true
+}
 
+func ExampleXY_In_star() {
+	// star is a five-pointed star constructed of five crossing segments.
+	// Regions of the points of the star are on the perimeter; In returns
+	// true for these regions.  The center region is not on the perimeter
+	// but borders the perimeter regions.  By the two-coloring then, In
+	// returns false for the center region.
+	star := raycast.Poly{{0, 3}, {4, 3}, {1, 0}, {2, 5}, {3, 0}}
+	top := raycast.XY{2, 4}
+	center := raycast.XY{2, 2}
+	fmt.Println(top.In(star))
+	fmt.Println(center.In(star))
+	// Output:
+	// true
+	// false
+}
+
+// added for coverage
 func TestDegenerate(t *testing.T) {
 	pg := make(raycast.Poly, 2)
 	pt := raycast.XY{}
@@ -39,36 +69,14 @@ func TestDegenerate(t *testing.T) {
 	}
 }
 
-func TestRight(t *testing.T) {
-	triangle := raycast.Poly{{0, 0}, {0, 2}, {2, 1}}
-	pt := raycast.XY{2.5, 1.5}
-	if pt.In(triangle) {
-		t.Fatal()
-	}
-}
-
-// A test showing that points on vertices may return either in or out.
+// show that points on vertices may return either in or out
 func TestV(t *testing.T) {
-	pg := raycast.Poly{{0, 0}, {0, 1}, {1, 1}} // a horizonal and vertical
-	for i := 0; i < 8; i++ {
-		pg = append(pg, raycast.XY{rand.Float64(), rand.Float64()})
+	pg := make(raycast.Poly, 8)
+	for i := range pg {
+		pg[i] = raycast.XY{rand.Float64(), rand.Float64()}
 	}
 	// log results on all vertices
 	for _, pt := range pg {
 		t.Log(pt.In(pg), pt)
 	}
-}
-
-// A test showing pathological case near 2ULP tolerance.
-func Test2ULP(t *testing.T) {
-	// *             *
-	// -        ^ (fp rounding)
-	// -        | (bump)
-	// *        +
-	y3 := math.Nextafter(math.Nextafter(math.Nextafter(0, 1), 1), 1)
-	pg := raycast.Poly{{0, 0}, {0, y3}, {3, y3}}
-	pt := raycast.XY{1.9, 0}
-	t.Log(pt.In(pg)) // gives true when it is nearly 2 ULP out.
-	// (and that's with only one bump.  it seems errors over 2 ULP may be
-	// possible.)
 }
